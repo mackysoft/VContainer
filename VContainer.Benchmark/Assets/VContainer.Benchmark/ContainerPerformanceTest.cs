@@ -2,7 +2,6 @@
 using Unity.PerformanceTesting;
 using VContainer;
 using VContainer.Benchmark.Fixtures;
-using Zenject;
 
 namespace Vcontainer.Benchmark
 {
@@ -14,7 +13,7 @@ namespace Vcontainer.Benchmark
         [Performance]
         public void ResolveSingleton()
         {
-            var zenjectContainer = new DiContainer();
+            var zenjectContainer = new Zenject.DiContainer();
             zenjectContainer.Bind<ISingleton1>().To<Singleton1>().AsSingle();
             zenjectContainer.Bind<ISingleton2>().To<Singleton2>().AsSingle();
             zenjectContainer.Bind<ISingleton3>().To<Singleton3>().AsSingle();
@@ -30,6 +29,24 @@ namespace Vcontainer.Benchmark
                     }
                 })
                 .SampleGroup("Zenject")
+                .Run();
+
+            var reflexContainer = new Reflex.Container();
+            reflexContainer.Bind<ISingleton1>().To<Singleton1>().AsSingleton();
+            reflexContainer.Bind<ISingleton2>().To<Singleton2>().AsSingleton();
+            reflexContainer.Bind<ISingleton3>().To<Singleton3>().AsSingleton();
+
+            Measure
+                .Method(() =>
+                {
+                    for (var i = 0; i < N; i++)
+                    {
+                        reflexContainer.Resolve<ISingleton1>();
+                        reflexContainer.Resolve<ISingleton2>();
+                        reflexContainer.Resolve<ISingleton3>();
+                    }
+                })
+                .SampleGroup("Reflex")
                 .Run();
 
             var builder = new ContainerBuilder();
@@ -56,7 +73,7 @@ namespace Vcontainer.Benchmark
         [Performance]
         public void ResolveTransient()
         {
-            var zenjectContainer = new DiContainer();
+            var zenjectContainer = new Zenject.DiContainer();
             zenjectContainer.Bind<ITransient1>().To<Transient1>().AsTransient();
             zenjectContainer.Bind<ITransient2>().To<Transient2>().AsTransient();
             zenjectContainer.Bind<ITransient3>().To<Transient3>().AsTransient();
@@ -72,6 +89,24 @@ namespace Vcontainer.Benchmark
                     }
                 })
                 .SampleGroup("Zenject")
+                .Run();
+
+            var reflexContainer = new Reflex.Container();
+            reflexContainer.Bind<ITransient1>().To<Transient1>().AsTransient();
+            reflexContainer.Bind<ITransient2>().To<Transient2>().AsTransient();
+            reflexContainer.Bind<ITransient3>().To<Transient3>().AsTransient();
+
+            Measure
+                .Method(() =>
+                {
+                    for (var i = 0; i < N; i++)
+                    {
+                        reflexContainer.Resolve<ITransient1>();
+                        reflexContainer.Resolve<ITransient2>();
+                        reflexContainer.Resolve<ITransient3>();
+                    }
+                })
+                .SampleGroup("Reflex")
                 .Run();
 
             var builder = new ContainerBuilder();
@@ -98,7 +133,7 @@ namespace Vcontainer.Benchmark
         [Performance]
         public void ResolveCombined()
         {
-            var zenjectContainer = new DiContainer();
+            var zenjectContainer = new Zenject.DiContainer();
             zenjectContainer.Bind<ISingleton1>().To<Singleton1>().AsSingle();
             zenjectContainer.Bind<ISingleton2>().To<Singleton2>().AsSingle();
             zenjectContainer.Bind<ISingleton3>().To<Singleton3>().AsSingle();
@@ -120,6 +155,30 @@ namespace Vcontainer.Benchmark
                     }
                 })
                 .SampleGroup("Zenject")
+                .Run();
+
+            var reflexContainer = new Reflex.Container();
+            reflexContainer.Bind<ISingleton1>().To<Singleton1>().AsSingleton();
+            reflexContainer.Bind<ISingleton2>().To<Singleton2>().AsSingleton();
+            reflexContainer.Bind<ISingleton3>().To<Singleton3>().AsSingleton();
+            reflexContainer.Bind<ITransient1>().To<Transient1>().AsTransient();
+            reflexContainer.Bind<ITransient2>().To<Transient2>().AsTransient();
+            reflexContainer.Bind<ITransient3>().To<Transient3>().AsTransient();
+            reflexContainer.Bind<ICombined1>().To<Combined1>().AsTransient();
+            reflexContainer.Bind<ICombined2>().To<Combined2>().AsTransient();
+            reflexContainer.Bind<ICombined3>().To<Combined3>().AsTransient();
+
+            Measure
+                .Method(() =>
+                {
+                    for (var i = 0; i < N; i++)
+                    {
+                        reflexContainer.Resolve<ICombined1>();
+                        reflexContainer.Resolve<ICombined2>();
+                        reflexContainer.Resolve<ICombined3>();
+                    }
+                })
+                .SampleGroup("Reflex")
                 .Run();
 
             var builder = new ContainerBuilder();
@@ -152,7 +211,7 @@ namespace Vcontainer.Benchmark
         [Performance]
         public void ResolveComplex()
         {
-            var zenjectContainer = new DiContainer();
+            var zenjectContainer = new Zenject.DiContainer();
             zenjectContainer.Bind<IFirstService>().To<FirstService>().AsSingle();
             zenjectContainer.Bind<ISecondService>().To<SecondService>().AsSingle();
             zenjectContainer.Bind<IThirdService>().To<ThirdService>().AsSingle();
@@ -177,6 +236,34 @@ namespace Vcontainer.Benchmark
                     }
                 })
                 .SampleGroup("Zenject")
+                // .GC()
+                .Run();
+
+            var reflexContainer = new Reflex.Container();
+            reflexContainer.Bind<IFirstService>().To<FirstService>().AsSingleton();
+            reflexContainer.Bind<ISecondService>().To<SecondService>().AsSingleton();
+            reflexContainer.Bind<IThirdService>().To<ThirdService>().AsSingleton();
+            reflexContainer.Bind<ISubObjectA>().To<SubObjectA>().AsTransient();
+            reflexContainer.Bind<ISubObjectB>().To<SubObjectB>().AsTransient();
+            reflexContainer.Bind<ISubObjectC>().To<SubObjectC>().AsTransient();
+            reflexContainer.Bind<IComplex1>().To<Complex1>().AsTransient();
+            reflexContainer.Bind<IComplex2>().To<Complex2>().AsTransient();
+            reflexContainer.Bind<IComplex3>().To<Complex3>().AsTransient();
+            reflexContainer.Bind<ISubObjectOne>().To<SubObjectOne>().AsTransient();
+            reflexContainer.Bind<ISubObjectTwo>().To<SubObjectTwo>().AsTransient();
+            reflexContainer.Bind<ISubObjectThree>().To<SubObjectThree>().AsTransient();
+
+            Measure
+                .Method(() =>
+                {
+                    for (var i = 0; i < N; i++)
+                    {
+                        reflexContainer.Resolve<IComplex1>();
+                        reflexContainer.Resolve<IComplex2>();
+                        reflexContainer.Resolve<IComplex3>();
+                    }
+                })
+                .SampleGroup("Reflex")
                 // .GC()
                 .Run();
 
@@ -252,7 +339,7 @@ namespace Vcontainer.Benchmark
                 {
                     for (var i = 0; i < N; i++)
                     {
-                        var zenjectContainer = new DiContainer();
+                        var zenjectContainer = new Zenject.DiContainer();
                         zenjectContainer.Bind<IFirstService>().To<FirstService>().AsSingle();
                         zenjectContainer.Bind<ISecondService>().To<SecondService>().AsSingle();
                         zenjectContainer.Bind<IThirdService>().To<ThirdService>().AsSingle();
@@ -268,6 +355,30 @@ namespace Vcontainer.Benchmark
                     }
                 })
                 .SampleGroup("Zenject")
+                // .GC()
+                .Run();
+
+            Measure
+                .Method(() =>
+                {
+                    for (var i = 0; i < N; i++)
+                    {
+                        var reflexContainer = new Reflex.Container();
+                        reflexContainer.Bind<IFirstService>().To<FirstService>().AsSingleton();
+                        reflexContainer.Bind<ISecondService>().To<SecondService>().AsSingleton();
+                        reflexContainer.Bind<IThirdService>().To<ThirdService>().AsSingleton();
+                        reflexContainer.Bind<ISubObjectA>().To<SubObjectA>().AsTransient();
+                        reflexContainer.Bind<ISubObjectB>().To<SubObjectB>().AsTransient();
+                        reflexContainer.Bind<ISubObjectC>().To<SubObjectC>().AsTransient();
+                        reflexContainer.Bind<IComplex1>().To<Complex1>().AsTransient();
+                        reflexContainer.Bind<IComplex2>().To<Complex2>().AsTransient();
+                        reflexContainer.Bind<IComplex3>().To<Complex3>().AsTransient();
+                        reflexContainer.Bind<ISubObjectOne>().To<SubObjectOne>().AsTransient();
+                        reflexContainer.Bind<ISubObjectTwo>().To<SubObjectTwo>().AsTransient();
+                        reflexContainer.Bind<ISubObjectThree>().To<SubObjectThree>().AsTransient();
+                    }
+                })
+                .SampleGroup("Reflex")
                 // .GC()
                 .Run();
 

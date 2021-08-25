@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.gustavopsantos.reflex": {
+      "version": "https://github.com/gustavopsantos/reflex.git?path=/Reflex/Assets/Reflex/#1.0.1",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "477296ee0ff9d180640bb03a05ae49b655fc89ea"
+    },
     "com.svermeulen.extenject": {
       "version": "9.2.0-stcf3",
       "depth": 0,
@@ -15,7 +22,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.6",
+      "version": "3.0.7",
       "depth": 0,
       "source": "registry",
       "dependencies": {
